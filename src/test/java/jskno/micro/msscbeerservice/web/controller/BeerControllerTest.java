@@ -1,26 +1,27 @@
 package jskno.micro.msscbeerservice.web.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jskno.micro.msscbeerservice.bootstrap.BeerLoader;
+import jskno.micro.msscbeerservice.services.BeerService;
 import jskno.micro.msscbeerservice.web.model.BeerDto;
 import jskno.micro.msscbeerservice.web.model.BeerStyleEnum;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(BeerServiceController.class)
-class BeerServiceControllerTest {
+@WebMvcTest(BeerController.class)
+public class BeerControllerTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -28,32 +29,29 @@ class BeerServiceControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    private BeerDto completeBeerDto;
-
-    @BeforeEach
-    public void setUp() {
-        completeBeerDto = BeerDto.builder()
-                .id(UUID.randomUUID())
-                .beerName("Beer Name")
-                .beerStyle(BeerStyleEnum.ALE)
-                .upc(123456789012L)
-                .price(new BigDecimal("12.58"))
-                .build();
-    }
+    @MockBean
+    BeerService beerService;
 
     @Test
     void getBeerById() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/beer/" + UUID.randomUUID().toString())
-                .accept(MediaType.APPLICATION_JSON))
+
+//        given(beerService.getById(any(), anyBoolean())).willReturn(getValidBeerDto());
+        given(beerService.getById(any())).willReturn(getValidBeerDto());
+
+        mockMvc.perform(get("/api/v1/beer/" + UUID.randomUUID().toString()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+
     }
 
     @Test
     void saveNewBeer() throws Exception {
+
         BeerDto beerDto = getValidBeerDto();
         String beerDtoJson = objectMapper.writeValueAsString(beerDto);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/beer/")
+        given(beerService.saveNewBeer(any())).willReturn(getValidBeerDto());
+
+        mockMvc.perform(post("/api/v1/beer/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(beerDtoJson))
                 .andExpect(status().isCreated());
@@ -61,22 +59,23 @@ class BeerServiceControllerTest {
 
     @Test
     void updateBeerById() throws Exception {
+        given(beerService.updateBeer(any(), any())).willReturn(getValidBeerDto());
+
         BeerDto beerDto = getValidBeerDto();
         String beerDtoJson = objectMapper.writeValueAsString(beerDto);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/beer/" + completeBeerDto.getId().toString())
+        mockMvc.perform(put("/api/v1/beer/" + UUID.randomUUID().toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(beerDtoJson))
                 .andExpect(status().isNoContent());
     }
 
-    private BeerDto getValidBeerDto() {
+    BeerDto getValidBeerDto(){
         return BeerDto.builder()
-                .id(null)
-                .beerName(completeBeerDto.getBeerName())
-                .beerStyle(completeBeerDto.getBeerStyle())
-                .upc(completeBeerDto.getUpc())
-                .price(completeBeerDto.getPrice())
+                .beerName("My Beer")
+                .beerStyle(BeerStyleEnum.PALE_ALE)
+                .price(new BigDecimal("2.99"))
+                .upc(BeerLoader.BEER_1_UPC)
                 .build();
     }
 }

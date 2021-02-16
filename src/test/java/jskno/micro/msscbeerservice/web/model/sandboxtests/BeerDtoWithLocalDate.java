@@ -1,7 +1,10 @@
-package jskno.micro.msscbeerservice.web.model;
+package jskno.micro.msscbeerservice.web.model.sandboxtests;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import jskno.micro.msscbeerservice.web.model.BeerStyleEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,6 +12,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -16,7 +20,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BeerDto {
+public class BeerDtoWithLocalDate {
 
     @JsonProperty("beerId")
     @Null
@@ -30,7 +34,6 @@ public class BeerDto {
     private OffsetDateTime createdDate;
 
     @Null
-    @JsonFormat(pattern = "yyy-MM-dd'T'HH:mm:ssZ", shape = JsonFormat.Shape.STRING)
     private OffsetDateTime lastModifiedDate;
 
     @NotBlank
@@ -41,7 +44,8 @@ public class BeerDto {
     private BeerStyleEnum beerStyle;
 
     @NotNull
-    private String upc;
+    @Positive
+    private Long upc;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     @NotNull
@@ -50,5 +54,9 @@ public class BeerDto {
 
     @Positive
     private Integer quantityOnHand;
+
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    private LocalDate myLocalDate;
 
 }
