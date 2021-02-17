@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs(uriScheme = "https", uriHost = "dev.springframework.guru", uriPort = 80)
 @WebMvcTest(BeerController.class)
-@ComponentScan(basePackages = "jskno.micro.msscbeerservice.web.mappers")
+//@ComponentScan(basePackages = "jskno.micro.msscbeerservice.web.mappers")
 public class BeerRestDocControllerTest {
 
     @Autowired
@@ -49,7 +49,7 @@ public class BeerRestDocControllerTest {
 
     @Test
     void getBeerById() throws Exception {
-        given(beerService.getById(ArgumentMatchers.any())).willReturn(BeerDto.builder().build());
+        given(beerService.getById(ArgumentMatchers.any(), ArgumentMatchers.any())).willReturn(BeerDto.builder().build());
         mockMvc.perform(RestDocumentationRequestBuilders.get("/api/v1/beer/{beerId}", UUID.randomUUID().toString())
                 .param("iscold", "yes")
                 .accept(MediaType.APPLICATION_JSON))
