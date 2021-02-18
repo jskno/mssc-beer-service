@@ -3,14 +3,13 @@ package jskno.micro.msscbeerservice.bootstrap;
 import jskno.micro.msscbeerservice.domain.Beer;
 import jskno.micro.msscbeerservice.repositories.BeerRepository;
 import jskno.micro.msscbeerservice.web.model.BeerStyleEnum;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
-//@Component
+@Component
 public class BeerLoader implements CommandLineRunner {
 
     public static final String BEER_1_UPC = "0631234200036";
